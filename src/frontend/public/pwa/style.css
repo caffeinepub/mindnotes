@@ -112,7 +112,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+  padding: 6px 16px max(env(safe-area-inset-bottom), 16px);
   flex-shrink: 0;
 }
 
