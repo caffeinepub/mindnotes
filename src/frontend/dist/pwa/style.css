@@ -107,13 +107,58 @@ html, body {
   pointer-events: none;
 }
 
+/* ── Note Drawing Area ── */
+#note-drawing-area {
+  margin: 12px 0 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: #1c1c1e;
+  border: 1px solid #2c2c2e;
+}
+
+#note-drawing-area.hidden {
+  display: none;
+}
+
+#note-drawing-img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  max-height: 280px;
+  object-fit: contain;
+  background: #111;
+}
+
+#note-drawing-edit,
+#note-drawing-delete {
+  position: absolute;
+  top: 8px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+#note-drawing-edit   { right: 44px; }
+#note-drawing-delete { right: 8px; }
+
 /* ── Bottom Bar ── */
 #bottom-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 16px max(env(safe-area-inset-bottom), 16px);
+  padding: 6px 16px 0;
+  padding-bottom: 0;
   flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 #bottom-tools {
@@ -137,6 +182,10 @@ html, body {
   opacity: 0.85;
 }
 
+#btn-markup.active {
+  opacity: 1;
+}
+
 #btn-compose {
   width: 44px;
   height: 44px;
@@ -155,6 +204,7 @@ html, body {
   inset: 0;
   background: rgba(0,0,0,0.82);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -162,6 +212,31 @@ html, body {
 
 #word-overlay.hidden {
   display: none;
+}
+
+#word-draw-preview {
+  width: 180px;
+  height: 140px;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.25s, transform 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#word-draw-preview.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+#word-draw-img {
+  max-width: 180px;
+  max-height: 140px;
+  border-radius: 10px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
 }
 
 #word-list {
@@ -304,15 +379,57 @@ html, body {
 .word-row {
   display: flex;
   align-items: center;
-  padding: 10px 28px;
+  padding: 10px 20px;
   border-bottom: 1px solid #2c2c2e;
-  gap: 8px;
+  gap: 6px;
 }
 
 .word-text {
   flex: 1;
   font-size: 15px;
   color: #e5e5ea;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Word drawing thumb in settings */
+.word-draw-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1c1c1e;
+  border: 1px solid #3a3a3c;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.word-draw-btn {
+  background: #2c2c2e;
+  border: none;
+  color: #8e8e93;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.word-draw-btn.has-drawing {
+  color: #FFD60A;
+  background: rgba(255,214,10,0.12);
 }
 
 .word-edit-input {
@@ -333,6 +450,7 @@ html, body {
   font-size: 13px;
   padding: 4px 6px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .word-edit-btn { color: #0a84ff; }
@@ -400,4 +518,246 @@ html, body {
 /* Active category highlight row */
 .category-row.active-cat {
   background: rgba(255,214,10,0.06);
+}
+
+/* ═══════════════════════════════════════════
+   DRAWING CANVAS OVERLAY (Note)
+═══════════════════════════════════════════ */
+#drawing-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 300;
+  touch-action: none;
+}
+
+#drawing-overlay.hidden {
+  display: none;
+}
+
+#drawing-canvas {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+#drawing-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: env(safe-area-inset-top) 16px 10px;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+#drawing-topbar button {
+  pointer-events: all;
+  background: rgba(44,44,46,0.9);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+#drawing-done {
+  color: #FFD60A !important;
+  font-weight: 600 !important;
+}
+
+#drawing-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+}
+
+#drawing-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+#drawing-toolbar > * {
+  pointer-events: all;
+}
+
+.draw-action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(44,44,46,0.9);
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+
+.draw-action-btn.active {
+  background: rgba(255,214,10,0.25);
+  color: #FFD60A;
+}
+
+#draw-colors,
+#word-draw-colors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(28,28,30,0.92);
+  padding: 6px 10px;
+  border-radius: 24px;
+  backdrop-filter: blur(8px);
+}
+
+.color-btn,
+.wcolor-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.color-btn.active,
+.wcolor-btn.active {
+  border-color: rgba(255,255,255,0.8);
+  transform: scale(1.2);
+}
+
+#draw-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(28,28,30,0.92);
+  padding: 8px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.size-btn {
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+  opacity: 0.4;
+}
+
+.size-btn:nth-child(1) { width: 6px;  height: 6px; }
+.size-btn:nth-child(2) { width: 10px; height: 10px; }
+.size-btn:nth-child(3) { width: 16px; height: 16px; }
+
+.size-btn.active {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* ═══════════════════════════════════════════
+   WORD DRAWING OVERLAY
+═══════════════════════════════════════════ */
+#word-drawing-overlay {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0a;
+  z-index: 350;
+  touch-action: none;
+}
+
+#word-drawing-overlay.hidden {
+  display: none;
+}
+
+#word-drawing-canvas {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+#word-drawing-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: env(safe-area-inset-top) 16px 10px;
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0) 100%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+#word-drawing-topbar button {
+  pointer-events: all;
+  background: rgba(44,44,46,0.9);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+#word-drawing-done {
+  color: #FFD60A !important;
+  font-weight: 600 !important;
+}
+
+#word-drawing-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+}
+
+#word-drawing-title em {
+  color: #FFD60A;
+  font-style: normal;
+}
+
+#word-drawing-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0) 100%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+#word-drawing-toolbar > * {
+  pointer-events: all;
 }
