@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Notes" />
+  <meta name="theme-color" content="#000000" />
+  <title>Notes</title>
+  <link rel="manifest" href="/pwa/manifest.json" />
+  <link rel="apple-touch-icon" href="/pwa/icon-192.png" />
+  <link rel="stylesheet" href="/pwa/style.css" />
+</head>
+<body>
+
+  <!-- Main Notes App -->
+  <div id="app">
+
+    <!-- Top Bar -->
+    <div id="topbar">
+      <button id="btn-back" aria-label="Back">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+          <path d="M9 1L1.5 8.5L9 16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="topbar-actions">
+        <button id="btn-share" aria-label="Share">
+          <svg width="18" height="20" viewBox="0 0 18 20" fill="none">
+            <path d="M9 1v12M4 5L9 1l5 4M1 13v4a1 1 0 001 1h14a1 1 0 001-1v-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="btn-more" aria-label="More" data-ocid="topbar.more.button">
+          <span>•••</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Note Content -->
+    <div id="note-wrapper">
+      <div id="note-date"></div>
+      <div
+        id="note-editor"
+        contenteditable="true"
+        spellcheck="true"
+        autocorrect="on"
+        autocapitalize="sentences"
+        data-placeholder="Start typing..."
+        data-ocid="note.editor"
+      ></div>
+    </div>
+
+    <!-- Bottom Toolbar -->
+    <div id="bottom-bar">
+      <div id="bottom-tools">
+        <button aria-label="Checklist" class="tool-btn">
+          <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+            <circle cx="3" cy="4" r="2.5" stroke="white" stroke-width="1.5"/>
+            <line x1="8" y1="4" x2="20" y2="4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="3" cy="14" r="2.5" stroke="white" stroke-width="1.5"/>
+            <line x1="8" y1="14" x2="20" y2="14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button aria-label="Attach" class="tool-btn">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M20.5 11.5L10.5 21.5C8.3 23.7 4.7 23.7 2.5 21.5C0.3 19.3 0.3 15.7 2.5 13.5L13.5 2.5C15 1 17.4 1 18.9 2.5C20.4 4 20.4 6.4 18.9 7.9L8.4 18.4C7.6 19.2 6.3 19.2 5.5 18.4C4.7 17.6 4.7 16.3 5.5 15.5L14.5 6.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button aria-label="Markup" class="tool-btn">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="11" r="9.5" stroke="white" stroke-width="1.5"/>
+            <path d="M7 12l2.5-2.5L11 11l3-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <button id="btn-compose" aria-label="New Note" data-ocid="note.compose.button">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M16 2l4 4-11 11H5v-4L16 2z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Word Selection Overlay -->
+  <div id="word-overlay" class="hidden" data-ocid="wordselect.panel">
+    <ul id="word-list"></ul>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settings-panel" class="hidden" data-ocid="settings.panel">
+    <div id="settings-content">
+      <div id="settings-header">
+        <span>Word Lists</span>
+        <button id="settings-close" data-ocid="settings.close_button">Done</button>
+      </div>
+      <div id="settings-body"></div>
+    </div>
+  </div>
+
+  <script src="/pwa/app.js"></script>
+</body>
+</html>
